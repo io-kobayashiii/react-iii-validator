@@ -1,0 +1,55 @@
+{
+	"name": "iii-validator",
+	"version": "1.0.14",
+	"description": "If you give it classes, you can perform validation.",
+	"main": "dist/index.js",
+	"module": "dist/esm/index.js",
+	"types": "dist/esm/index.d.ts",
+	"bin": {
+		"my-hello-lib": "dist/bin/index.js"
+	},
+	"engines": {
+		"node": ">=14"
+	},
+	"scripts": {
+		"prebuild": "rimraf dist",
+		"build": "run-p build:*",
+		"build:common": "tsc",
+		"build:esm": "tsc -p tsconfig.esm.json",
+		"test": "jest"
+	},
+	"files": [
+		"dist"
+	],
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/io-kobayashiii/iii-validator.git"
+	},
+	"keywords": [
+		"validator",
+		"iii-validator"
+	],
+	"author": "Io Kobayashi <io-kobayashiii@gmail.com> (https://github.com/io-kobayashiii)",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/io-kobayashiii/iii-validator/issues"
+	},
+	"homepage": "https://github.com/io-kobayashiii/iii-validator#readme",
+	"devDependencies": {
+		"@jest/types": "^27.5.1",
+		"@types/jest": "^27.4.0",
+		"@types/node": "^17.0.18",
+		"@typescript-eslint/eslint-plugin": "^5.12.0",
+		"@typescript-eslint/parser": "^5.12.0",
+		"eslint": "^8.9.0",
+		"eslint-config-prettier": "^8.4.0",
+		"jest": "^27.5.1",
+		"npm-run-all": "^4.1.5",
+		"prettier": "^2.5.1",
+		"rimraf": "^3.0.2",
+		"ts-jest": "^27.1.3",
+		"ts-loader": "^9.2.6",
+		"ts-node": "^10.5.0",
+		"typescript": "^4.5.5"
+	}
+}
