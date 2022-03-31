@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { useUniqueId } from './useUniqueId'
+import { customAlphabet } from 'nanoid'
 
 type Options = {
 	name?: string
@@ -8,13 +8,14 @@ type Options = {
 	recreate?: boolean
 }
 
-type Instances = {
-	[x: string]: ValidatorController
-}
+const ValidatorControllerInstances = {} as { [x: string]: ValidatorController }
+
+const alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'
+const nanoid = customAlphabet(alphabet, 16)
 
 export const useValidator = (options?: Options) => {
-	const [ids, setIds] = React.useState<string[]>([useUniqueId(16)])
-	const [Instances, setInstances] = React.useState<Instances>({})
+	const id = nanoid()
+	return new ValidatorController(id, options)
 }
 
 type ValidatorControllerRegisterProps = {
@@ -23,9 +24,9 @@ type ValidatorControllerRegisterProps = {
 
 class ValidatorController {
 	id: string
-	constructor(options?: Options) {
+	constructor(id: string, options?: Options) {
 		console.log(`log ::: ValidatorController.constructor`)
-		this.id = useUniqueId(10)
+		this.id = id
 		console.log(`log ::: ValidatorController.constructor / this.id: ${this.id}`)
 	}
 	register(registerProps: ValidatorControllerRegisterProps) {
@@ -33,6 +34,12 @@ class ValidatorController {
 		console.log(`log ::: ValidatorController.register / this.id: ${this.id}`)
 		console.log(registerProps.ref.current)
 		new Validator({ element: registerProps.ref.current })
+	}
+	addValidator(name: string) {
+		console.log(`log ::: ValidatorController.addValidator`)
+	}
+	validate() {
+		console.log(`log ::: ValidatorController.validate`)
 	}
 }
 
