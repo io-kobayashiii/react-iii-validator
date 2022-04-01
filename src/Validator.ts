@@ -54,7 +54,7 @@ export class Validator {
 	}
 	setErrorMessages() {
 		return {
-			empty: 'この項目は必須です。',
+			required: 'この項目は必須です。',
 			email: 'メールアドレスの形式が正しくありません。',
 			confirmation: '入力内容が一致しません。',
 			halfWidthNumber: '半角数字で入力してください。',
@@ -67,18 +67,19 @@ export class Validator {
 	}
 	setValidateFunctions() {
 		return {
-			empty: () => {
+			required: () => {
 				switch (this.element.tagName) {
-					case 'INPUT' || 'TEXTAREA':
+					case 'INPUT':
+					case 'TEXTAREA':
 						if (this.value == '') {
-							this.showErrorMessage('empty')
+							this.showErrorMessage('required')
 							this.validity = false
 							this.adjustValidationClasses()
 						}
 						break
 					case 'SELECT':
 						if ((this.value as string) == 'unselected' || (this.value as string) == '') {
-							this.showErrorMessage('empty')
+							this.showErrorMessage('required')
 							this.validity = false
 							this.adjustValidationClasses()
 						}
@@ -87,25 +88,25 @@ export class Validator {
 						break
 				}
 			},
-			multipleEmpty: () => {
-				let isMultipleEmptyValid = false as boolean
-				let multipleEmptyGroup = '' as string
+			multipleRequired: () => {
+				let isMultipleRequiredValid = false as boolean
+				let multipleRequiredGroup = '' as string
 				Array.prototype.forEach.call(this.element.classList, (_class: string) => {
-					if (_class.match(/^multipleEmptyGroup::/)) multipleEmptyGroup = _class.split('::')[1]
+					if (_class.match(/^multipleRequiredGroup::/)) multipleRequiredGroup = _class.split('::')[1]
 				})
-				const multipleEmptyElements = document.querySelectorAll(`.multipleEmptyGroup\\:\\:${multipleEmptyGroup}`)
-				Array.prototype.forEach.call(multipleEmptyElements, (element) => {
-					if (element.value != '') isMultipleEmptyValid = true
+				const multipleRequiredElements = document.querySelectorAll(`.multipleRequiredGroup\\:\\:${multipleRequiredGroup}`)
+				Array.prototype.forEach.call(multipleRequiredElements, (element) => {
+					if (element.value != '') isMultipleRequiredValid = true
 				})
-				if (!isMultipleEmptyValid) {
+				if (!isMultipleRequiredValid) {
 					let errorMessage = '' as string
-					Array.prototype.forEach.call(multipleEmptyElements, (element, index) => {
-						let multipleEmptyName = '' as string
+					Array.prototype.forEach.call(multipleRequiredElements, (element, index) => {
+						let multipleRequiredName = '' as string
 						Array.prototype.forEach.call(element.classList, (_class: string) => {
-							if (_class.match(/^multipleEmptyName::/)) multipleEmptyName = _class.split('::')[1]
+							if (_class.match(/^multipleRequiredName::/)) multipleRequiredName = _class.split('::')[1]
 						})
-						errorMessage += index == 0 ? multipleEmptyName : `、${multipleEmptyName}`
-						if (index == multipleEmptyElements.length - 1) errorMessage += `のいずれかの入力は必須です。`
+						errorMessage += index == 0 ? multipleRequiredName : `、${multipleRequiredName}`
+						if (index == multipleRequiredElements.length - 1) errorMessage += `のいずれかの入力は必須です。`
 					})
 					this.showCustomErrorMessage(errorMessage)
 					this.validity = false
@@ -232,9 +233,8 @@ export class Validator {
 		this.validity = true
 		this.validations!.forEach((validation) => {
 			this.currentValidation = validation
-			if (validation == 'empty' || validation == 'multipleEmpty') this.validateFunctions[validation]()
-			if (validation != 'empty' && (this.value as string) != '')
-				this.validateFunctions[validation.includes('-') ? validation.split('-')[0] : validation]()
+			if (validation == 'required' || validation == 'multipleRequired') this.validateFunctions[validation]()
+			if (validation != 'required' && (this.value as string) != '') this.validateFunctions[validation.includes('-') ? validation.split('-')[0] : validation]()
 			this.currentValidation = null
 		})
 		if (this.validity) this.adjustValidationClasses()
