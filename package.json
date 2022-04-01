@@ -1,6 +1,6 @@
 {
 	"name": "react-iii-validator",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"description": "If you give it classes, you can perform validation.",
 	"main": "dist/index.js",
 	"module": "dist/esm/index.js",
