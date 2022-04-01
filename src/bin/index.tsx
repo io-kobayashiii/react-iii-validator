@@ -2,7 +2,6 @@ import * as React from 'react'
 import { ValidatorController } from './ValidatorController'
 
 type Options = {
-	validationGroup?: HTMLElement
 	validClasses?: string[]
 	invalidClasses?: string[]
 }
