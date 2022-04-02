@@ -32,9 +32,9 @@
 	"author": "Io Kobayashi <io-kobayashiii@gmail.com> (https://github.com/io-kobayashiii)",
 	"license": "MIT",
 	"bugs": {
-		"url": "https://github.com/io-kobayashiii/iii-validator/issues"
+		"url": "https://github.com/io-kobayashiii/react-iii-validator/issues"
 	},
-	"homepage": "https://github.com/io-kobayashiii/iii-validator#readme",
+	"homepage": "https://github.com/io-kobayashiii/react-iii-validator#readme",
 	"devDependencies": {
 		"@jest/types": "^27.5.1",
 		"@types/jest": "^27.4.0",
