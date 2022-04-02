@@ -1,7 +1,7 @@
 # インストール
 ```bash
 # npm
-npm install -D iii-validator
+npm install -D react-iii-validator
 
 # yarn
 yarn add -D react-iii-validator
