@@ -19,10 +19,6 @@ yarn add -D react-iii-validator
 3. バリデーションを通過しなかった場合にエラーメッセージを表示する要素を用意し `error-tip` クラスを付与
 4. バリデーション対象要素と error-tip 要素を `form-group` クラスを付与した要素でラップ
 
-例）
-```html
-```
-
 上記のように要素を準備したら useValidator フックを使用して react-iii-validator のインスタンスを生成し、useEffect の中などDOMツリー生成が保証されているタイミングで initialize してください。
 ```typescript
 import * as React from 'react'
@@ -31,7 +27,7 @@ import { useValidator } from 'react-iii-validator'
 export const SampleComponent = () => {
 	const Validator = useValidator()
 	React.useEffect(() => {
-		Validator.validate()
+		Validator.initialize()
 	}, [])
 	return (
 		<div class='form-group'>
@@ -45,7 +41,9 @@ export const SampleComponent = () => {
 export default SampleComponent
 ```
 
-あとは任意のタイミングでバリデーションを実行
+<br>
+
+`validate()` メソッドでバリデーションを実行できます。
 ```javascript
 element.addEventListener('click', () => Validator.validate())
 ```
@@ -85,8 +83,8 @@ element.addEventListener('click', () => Validator.validate())
 # エラーとなった要素のスタイル
 バリデーション実行後エラーとなったバリデーション対象要素には `is-invalid` クラスが付与されますので `.is-invalid` に任意のスタイルを定義するか、 react-iii-validator のインスタンス生成時に次のように配列形式で `invalidClasses` を渡すことで `is-invalid` クラスに加えて任意のクラスを付与できます。  
 
-```javascript
-const Validator = new ValidatorInitializer({invalidClasses: ['bg-red-200', 'text-red']})
+```typescript
+const Validator = useValidator({invalidClasses: ['bg-red-200', 'text-red']})
 ```
 
 <br>
@@ -287,7 +285,7 @@ xx文字以上、yy文字以下のバリデーションです。
 
 Ref を使って渡す場合）
 
-```javascript
+```typescript
 Validator.initialize(AnyRef.current)
 ```
 
