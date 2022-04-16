@@ -6,6 +6,7 @@ type ValidatorProps = {
 	element: FormElements
 	validClasses?: string[]
 	invalidClasses?: string[]
+	debugMode: boolean
 }
 
 export class Validator {
@@ -14,6 +15,7 @@ export class Validator {
 	element: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
 	validClasses?: string[]
 	invalidClasses?: string[]
+	debugMode: boolean
 	name: string | null
 	validations?: string[]
 	formGroupElement: HTMLElement | null
@@ -24,13 +26,14 @@ export class Validator {
 	value: number | boolean | string | null
 	currentValidation: string | null
 	validity: boolean | null
-	constructor({ validationGroup, element, validClasses, invalidClasses }: ValidatorProps) {
+	constructor({ validationGroup, element, validClasses, invalidClasses, debugMode }: ValidatorProps) {
 		this.id = customNanoid()
-		console.log(`log ::: Validator.constructor / this.id: ${this.id}`)
+		debugMode && console.log(`log ::: Validator.constructor / this.id: ${this.id}`)
 		this.validationGroup = validationGroup
 		this.element = element
 		this.validClasses = validClasses
 		this.invalidClasses = invalidClasses
+		this.debugMode = debugMode
 		this.name = this.element.getAttribute('name')
 		this.validations = this.setValidations()
 		this.formGroupElement = element.closest('.form-group')
@@ -226,7 +229,7 @@ export class Validator {
 	}
 
 	validate() {
-		console.log(`log ::: Validator.validate / name: ${this.name}`)
+		this.debugMode && console.log(`log ::: Validator.validate / name: ${this.name}`)
 		if (this.getHasIgnoreValidation()) return
 		this.setValue()
 		this.resetErrorTip()
@@ -240,7 +243,7 @@ export class Validator {
 		if (this.validity) this.adjustValidationClasses()
 	}
 	getValidity() {
-		console.log(`log ::: Validator.getValidity / ${this.validity}`)
+		this.debugMode && console.log(`log ::: Validator.getValidity / ${this.validity}`)
 		return this.validity
 	}
 	getHasIgnoreValidation() {
