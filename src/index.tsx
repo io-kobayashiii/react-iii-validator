@@ -4,6 +4,7 @@ import { ValidatorController } from './ValidatorController'
 type Options = {
 	validClasses?: string[]
 	invalidClasses?: string[]
+	debugMode?: boolean
 }
 
 export const useValidator = (options?: Options) => {
