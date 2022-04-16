@@ -11,6 +11,7 @@ export class ValidatorController {
 	validClasses?: string[]
 	invalidClasses?: string[]
 	errorStatus: boolean | null
+	debugMode: boolean
 	constructor(options?: Options) {
 		this.id = nanoid()
 		this.Validators = {}
@@ -18,12 +19,13 @@ export class ValidatorController {
 		this.validClasses = options?.validClasses
 		this.invalidClasses = options?.invalidClasses
 		this.errorStatus = null
+		this.debugMode = !!options?.debugMode
 	}
 	logId() {
 		console.log(`log ::: ValidatorController.logId / this.id: ${this.id}`)
 	}
 	initialize(validationGroup?: HTMLElement | Document) {
-		console.log(`log ::: ValidatorController.initialize`)
+		this.Validators.debugMode && console.log(`log ::: ValidatorController.initialize`)
 		this.validationGroup = validationGroup ? validationGroup : document
 		const elements = this.validationGroup.getElementsByClassName('validate')
 		Array.prototype.forEach.call(elements, (element: FormElements) => {
@@ -31,10 +33,10 @@ export class ValidatorController {
 		})
 	}
 	addValidator(element: FormElements) {
-		console.log(`log ::: ValidatorController.addValidator`)
+		this.Validators.debugMode && console.log(`log ::: ValidatorController.addValidator`)
 		const name = element.getAttribute('name')
 		name == null
-			? console.log(`error ::: this ${element.tagName} element doesn't have name attribute`)
+			? this.Validators.debugMode && console.log(`error ::: this ${element.tagName} element doesn't have name attribute`)
 			: (this.Validators[name] = []) &&
 			  this.Validators[name].push(
 					new Validator({
@@ -42,11 +44,12 @@ export class ValidatorController {
 						element: element,
 						validClasses: this.validClasses,
 						invalidClasses: this.invalidClasses,
+						debugMode: this.debugMode,
 					}),
 			  )
 	}
 	validate(name?: string) {
-		console.log(`log ::: ValidatorController.validate`)
+		this.Validators.debugMode && console.log(`log ::: ValidatorController.validate`)
 		if (name) {
 			this.Validators[name].forEach((validator) => validator.validate())
 		} else {
@@ -62,7 +65,7 @@ export class ValidatorController {
 				if (!validator.getErrorStatus()) this.errorStatus = false
 			})
 		}
-		console.log(`log ::: ValidatorController.getErrorStatus / errorStatus: ${this.errorStatus}`)
+		this.Validators.debugMode && console.log(`log ::: ValidatorController.getErrorStatus / errorStatus: ${this.errorStatus}`)
 		return this.errorStatus
 	}
 }
