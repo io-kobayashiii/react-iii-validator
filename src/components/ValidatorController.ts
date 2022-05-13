@@ -1,5 +1,5 @@
 import { nanoid } from 'nanoid'
-import { Options } from './types'
+import { Options } from '../types'
 import { Validator } from './Validator'
 
 type FormElements = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
