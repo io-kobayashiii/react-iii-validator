@@ -1,5 +1,5 @@
-import { customNanoid } from './customNanoid'
-import { FormElements } from './types'
+import { customNanoid } from '../libraries/customNanoid'
+import { FormElements } from '../types'
 
 type ValidatorProps = {
 	validationGroup: HTMLElement | Document
