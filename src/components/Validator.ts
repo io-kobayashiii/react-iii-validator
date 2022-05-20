@@ -1,3 +1,4 @@
+import { threadId } from 'worker_threads'
 import { customNanoid } from '../libraries/customNanoid'
 import { FormElements } from '../types'
 
@@ -63,6 +64,7 @@ export class Validator {
 			halfWidthNumber: '半角数字で入力してください。',
 			katakana: '全角カタカナで入力してください。',
 			hiragana: 'ひらがなで入力してください。',
+			date: '日付の形式が正しくありません。',
 		}
 	}
 	setValue() {
@@ -117,11 +119,7 @@ export class Validator {
 				}
 			},
 			email: () => {
-				if (
-					!(this.value as string).match(
-						/^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))$/i,
-					)
-				) {
+				if (!/^[a-zA-Z0-9_+-]+(\.[a-zA-Z0-9_+-]+)*@([a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]*\.)+[a-zA-Z]{2,}$/.test(this.value as string)) {
 					this.showErrorMessage('email')
 					this.validity = false
 					this.adjustValidationClasses()
@@ -155,21 +153,21 @@ export class Validator {
 				}
 			},
 			halfWidthNumber: () => {
-				if (!(this.value as string).match(/^[0-9\s!"#$%&'()=~|`{+*}<>?_\-^\\@[;:\],./^]+$/)) {
+				if (!/^[0-9\s!"#$%&'()=~|`{+*}<>?_\-^\\@[;:\],./^]+$/.test(this.value as string)) {
 					this.showErrorMessage('halfWidthNumber')
 					this.validity = false
 					this.adjustValidationClasses()
 				}
 			},
 			katakana: () => {
-				if (!(this.value as string).match(/^[ァ-ヾ０-９－\s　！”＃＄％＆’（）＝～｜‘｛＋＊｝＜＞？＿－＾￥＠「；：」、。・]+$/)) {
+				if (!/^[ァ-ヾ０-９－\s　！”＃＄％＆’（）＝～｜‘｛＋＊｝＜＞？＿－＾￥＠「；：」、。・]+$/.test(this.value as string)) {
 					this.showErrorMessage('katakana')
 					this.validity = false
 					this.adjustValidationClasses()
 				}
 			},
 			hiragana: () => {
-				if (!(this.value as string).match(/^[ぁ-んー０-９－\s　！”＃＄％＆’（）＝～｜‘｛＋＊｝＜＞？＿－＾￥＠「；：」、。・]+$/)) {
+				if (!/^[ぁ-んー０-９－\s　！”＃＄％＆’（）＝～｜‘｛＋＊｝＜＞？＿－＾￥＠「；：」、。・]+$/.test(this.value as string)) {
 					this.showErrorMessage('hiragana')
 					this.validity = false
 					this.adjustValidationClasses()
@@ -180,6 +178,99 @@ export class Validator {
 				const maximumCharacters = this.currentValidation?.split('-')[2]
 				if ((this.value as string).length < Number(minimumCharacters) || Number(maximumCharacters) < (this.value as string).length) {
 					this.showCustomErrorMessage(`${minimumCharacters}文字以上${maximumCharacters}以下で入力してください。`)
+					this.validity = false
+					this.adjustValidationClasses()
+				}
+			},
+			date: () => {
+				let isMatched = false
+				const regExps = [
+					/^[1-9][0-9]{3}(\/)([1-9]|[0-1][0-9])(\/)([0-9]|[0-3][0-9])$/,
+					/^[1-9][0-9]{3}(\-)([1-9]|[0-1][0-9])(\-)([0-9]|[0-3][0-9])$/,
+					/^[1-9][0-9]{3}(\.)([1-9]|[0-1][0-9])(\.)([0-9]|[0-3][0-9])$/,
+					/^[1-9][0-9]{3}(年)([1-9]|[0-1][0-9])(月)([0-9]|[0-3][0-9])[日]$/,
+				]
+				regExps.forEach((regExp) => {
+					if (regExp.test(this.value as string)) isMatched = true
+				})
+				if (!isMatched) {
+					this.showErrorMessage('date')
+					this.validity = false
+					this.adjustValidationClasses()
+				}
+			},
+			dateAfter: () => {
+				let dateAfterBaseNameAttribute = '' as string
+				Array.prototype.forEach.call(this.element.classList, (_class: string) => {
+					if (_class.match(/^dateAfterBaseNameAttribute::/)) dateAfterBaseNameAttribute = _class.split('::')[1]
+				})
+				console.log(`log ::: dateAfterBaseNameAttribute: ${dateAfterBaseNameAttribute}`)
+				const dateAfterBaseValue = this.validationGroup.querySelector<HTMLInputElement | HTMLSelectElement>(`[name='${dateAfterBaseNameAttribute}']`)!.value
+				if (dateAfterBaseValue == '') return
+
+				const dateAfterBaseDateLocaleString = new Date(dateAfterBaseValue.replace('年', '/').replace('月', '/').replace('日', '')).toLocaleString().split(' ')[0]
+				const dateAfterBaseDate = {
+					year: Number(dateAfterBaseDateLocaleString.split('/')[0]),
+					month: Number(dateAfterBaseDateLocaleString.split('/')[1]),
+					day: Number(dateAfterBaseDateLocaleString.split('/')[2]),
+				}
+				const thisDateLocaleString = new Date((this.value as string).replace('年', '/').replace('月', '/').replace('日', '')).toLocaleString().split(' ')[0]
+				const thisDate = {
+					year: Number(thisDateLocaleString.split('/')[0]),
+					month: Number(thisDateLocaleString.split('/')[1]),
+					day: Number(thisDateLocaleString.split('/')[2]),
+				}
+
+				console.log(`log ::: compare date / year: ${thisDate.year}, ${dateAfterBaseDate.year} / month: ${thisDate.month}, ${dateAfterBaseDate.month} / day: ${thisDate.day}, ${dateAfterBaseDate.day}`)
+
+				if (
+					thisDate.year < dateAfterBaseDate.year ||
+					(thisDate.year == dateAfterBaseDate.year && thisDate.month < dateAfterBaseDate.month) ||
+					(thisDate.year == dateAfterBaseDate.year && thisDate.month == dateAfterBaseDate.month && thisDate.day < dateAfterBaseDate.day)
+				) {
+					let dateAfterBaseName = '' as string
+					Array.prototype.forEach.call(this.element.classList, (_class: string) => {
+						if (_class.match(/^dateAfterBaseName::/)) dateAfterBaseName = _class.split('::')[1]
+					})
+					this.showCustomErrorMessage(`${dateAfterBaseName}より後の日付を入力してください。`)
+					this.validity = false
+					this.adjustValidationClasses()
+				}
+			},
+			dateBefore: () => {
+				let dateBeforeBaseNameAttribute = '' as string
+				Array.prototype.forEach.call(this.element.classList, (_class: string) => {
+					if (_class.match(/^dateBeforeBaseNameAttribute::/)) dateBeforeBaseNameAttribute = _class.split('::')[1]
+				})
+				console.log(`log ::: dateBeforeBaseNameAttribute: ${dateBeforeBaseNameAttribute}`)
+				const dateBeforeBaseValue = this.validationGroup.querySelector<HTMLInputElement | HTMLSelectElement>(`[name='${dateBeforeBaseNameAttribute}']`)!.value
+				if (dateBeforeBaseValue == '') return
+
+				const dateBeforeBaseDateLocaleString = new Date(dateBeforeBaseValue.replace('年', '/').replace('月', '/').replace('日', '')).toLocaleString().split(' ')[0]
+				const dateBeforeBaseDate = {
+					year: Number(dateBeforeBaseDateLocaleString.split('/')[0]),
+					month: Number(dateBeforeBaseDateLocaleString.split('/')[1]),
+					day: Number(dateBeforeBaseDateLocaleString.split('/')[2]),
+				}
+				const thisDateLocaleString = new Date((this.value as string).replace('年', '/').replace('月', '/').replace('日', '')).toLocaleString().split(' ')[0]
+				const thisDate = {
+					year: Number(thisDateLocaleString.split('/')[0]),
+					month: Number(thisDateLocaleString.split('/')[1]),
+					day: Number(thisDateLocaleString.split('/')[2]),
+				}
+
+				console.log(`log ::: compare date / year: ${thisDate.year}, ${dateBeforeBaseDate.year} / month: ${thisDate.month}, ${dateBeforeBaseDate.month} / day: ${thisDate.day}, ${dateBeforeBaseDate.day}`)
+
+				if (
+					dateBeforeBaseDate.year < thisDate.year ||
+					(dateBeforeBaseDate.year == thisDate.year && dateBeforeBaseDate.month < thisDate.month) ||
+					(dateBeforeBaseDate.year == thisDate.year && dateBeforeBaseDate.month == thisDate.month && dateBeforeBaseDate.day < thisDate.day)
+				) {
+					let dateBeforeBaseName = '' as string
+					Array.prototype.forEach.call(this.element.classList, (_class: string) => {
+						if (_class.match(/^dateBeforeBaseName::/)) dateBeforeBaseName = _class.split('::')[1]
+					})
+					this.showCustomErrorMessage(`${dateBeforeBaseName}より前の日付を入力してください。`)
 					this.validity = false
 					this.adjustValidationClasses()
 				}
@@ -227,7 +318,6 @@ export class Validator {
 	resetErrorTip() {
 		this.errorTipElement!.innerHTML = ''
 	}
-
 	validate() {
 		this.debugMode && console.log(`log ::: Validator.validate / name: ${this.name}`)
 		if (this.getHasIgnoreValidation()) return
