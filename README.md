@@ -266,6 +266,58 @@ xx文字以上、yy文字以下のバリデーションです。
 <br>
 <br>
 <br>
+
+## 【date / dateBefore / dateAfter】
+### 概要
+dateは日付形式のバリデーション、dateBeforeとdateAfterはいつ以前、いつ以降のバリデーションです。
+
+### 使用方法
+バリデーション対象要素に `validations::date` クラスを付与します。  
+また、dateBeforeとdateAfterを併用した例は以下のとおりです。  
+この場合、開始日は終了日以前、終了日は開始日以降のバリデーションが実行されます。
+
+### 使用例
+以下の例では `react-datepicker` のコンポーネントを使用しています。
+```html
+<FormGroup>
+	<Label displayText={`開始日`} />
+	<DatePicker
+		maxDate={endDate}
+		name={'start_date'}
+		className={validate validations::date:dateBefore dateBeforeBaseNameAttribute::end_date dateBeforeBaseName::終了日`}
+		dateFormat='yyyy/MM/dd'
+		selected={startDate}
+		locale={`ja`}
+		autoComplete={'off'}
+		onChange={async (selectedDate) => {
+			await asyncSetStartDate(selectedDate)
+			watchInputFieldsForChanges()
+		}}
+	/>
+	<ErrorTip />
+</FormGroup>
+<FormGroup>
+	<Label displayText={`終了日`}/>
+	<DatePicker
+		minDate={startDate}
+		name={'end_date'}
+		className={`validate validations::date:dateAfter dateAfterBaseNameAttribute::start_date dateAfterBaseName::開始日`}
+		dateFormat='yyyy/MM/dd'
+		selected={endDate}
+		locale={`ja`}
+		autoComplete={'off'}
+		onChange={async (selectedDate) => {
+			await asyncSetEndDate(selectedDate)
+			watchInputFieldsForChanges()
+		}}
+	/>
+	<ErrorTip />
+</FormGroup>
+
+```
+<br>
+<br>
+<br>
 <br>
 <br>
 
@@ -279,6 +331,10 @@ xx文字以上、yy文字以下のバリデーションです。
 |----|----|----|----|
 |validClasses|string[]|undefined| `.validate` を付与した要素がバリデーションに通過したときに付与したいクラス名を配列形式で指定できます。ひとつだけクラス名を渡す場合も配列形式にしてください。|
 |invalidClasses|string[]|undefined| `.validate` を付与した要素がバリデーションに通過しなかったときに付与したいクラス名を配列形式で指定できます。ひとつだけクラス名を渡す場合も配列形式にしてください。|
+
+<br>
+<br>
+<br>
 
 ## initialize 実行時
 バリデーション対象要素の探索ルートを指定できます。ページ内に複数の `<form>` があり、各 `<form>` ごとにバリデーションを行いたい場合には form 要素を渡すか、任意のHTMLElementを渡して探索ルートとしてください。  
